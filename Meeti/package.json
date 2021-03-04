@@ -1,0 +1,24 @@
+{
+    "name": "meeti",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon ./index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Eduardo Caldera Coltters",
+    "license": "ISC",
+    "devDependencies": {
+        "nodemon": "^2.0.2"
+    },
+    "dependencies": {
+        "bcrypt-nodejs": "0.0.3",
+        "dotenv": "^8.2.0",
+        "ejs": "^3.0.1",
+        "express": "^4.17.1",
+        "express-ejs-layouts": "^2.5.0",
+        "pg": "^7.18.2",
+        "sequelize": "^5.21.5"
+    }
+}
