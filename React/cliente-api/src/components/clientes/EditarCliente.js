@@ -3,7 +3,11 @@ import Swal from "sweetalert2";
 import { withRouter } from "react-router-dom";
 import clienteAxios from "../../config/axios";
 
-function NuevoCliente({ history }) {
+function EditarCliente(props) {
+  //Obtener el ID
+  const { id } = props.match.params;
+  console.log(id);
+
   //cliente = state, guardarCliente = funcion para guardar el state
   const [cliente, guardarCliente] = useState({
     nombre: "",
@@ -25,29 +29,6 @@ function NuevoCliente({ history }) {
     console.log(cliente);
   };
 
-  //Añade en la REST API un cliente Nuevo
-  const agregarCliente = (e) => {
-    e.preventDefault();
-
-    //Enviar peticion
-    clienteAxios.post("/clientes", cliente).then((res) => {
-      if (res.data.code === 11000) {
-        //console.log("Error duplicado de Mongo");
-        Swal.fire({
-          icon: "error",
-          title: "Hubo un error",
-          text: "Ese cliente ya esta registrado",
-        });
-      } else {
-        console.log(res.data);
-        Swal.fire("Cliente agregado!", res.data.mensaje, "success");
-      }
-
-      //Redireccionar
-      history.push("/");
-    });
-  };
-
   //Validar el formulario
   const validarCliente = () => {
     const { nombre, apellido, email, empresa, telefono } = cliente;
@@ -66,8 +47,8 @@ function NuevoCliente({ history }) {
 
   return (
     <Fragment>
-      <h2>Nuevo Cliente</h2>
-      <form onSubmit={agregarCliente}>
+      <h2>Editar Cliente</h2>
+      <form>
         <legend>Llena todos los campos</legend>
 
         <div className="campo">
@@ -134,4 +115,4 @@ function NuevoCliente({ history }) {
 }
 
 //HOC, es una funcion que toma un componente y retorna un nuevo componente
-export default withRouter(NuevoCliente);
+export default withRouter(EditarCliente);
