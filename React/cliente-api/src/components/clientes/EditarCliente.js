@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { withRouter } from "react-router-dom";
 import clienteAxios from "../../config/axios";
@@ -6,10 +6,10 @@ import clienteAxios from "../../config/axios";
 function EditarCliente(props) {
   //Obtener el ID
   const { id } = props.match.params;
-  console.log(id);
+  //console.log(id);
 
-  //cliente = state, guardarCliente = funcion para guardar el state
-  const [cliente, guardarCliente] = useState({
+  //cliente = state, datosCliente = funcion para guardar el state
+  const [cliente, datosCliente] = useState({
     nombre: "",
     apellido: "",
     empresa: "",
@@ -17,16 +17,52 @@ function EditarCliente(props) {
     telefono: "",
   });
 
+  //Query a la API
+  const consultarAPI = async () => {
+    const clienteConsulta = await clienteAxios.get(`/clientes/${id}`);
+    console.log(clienteConsulta.data);
+
+    //colocar en el useState
+    datosCliente(clienteConsulta.data);
+  };
+
+  //useEffect cuando el componente carga
+  useEffect(() => {
+    consultarAPI();
+  }, []);
+
   //leer los datos del formulario
   const actualizarState = (e) => {
     //console.log(e.target.value);
     //Almacenar lo que el usuario escribe en el useState
-    guardarCliente({
+    datosCliente({
       //Obtener una copia del state actual
       ...cliente,
       [e.target.name]: e.target.value,
     });
-    console.log(cliente);
+    //console.log(cliente);
+  };
+
+  //Envia una peticion por axios para actualizar el clientes
+  const actualizarCliente = (e) => {
+    e.preventDefault();
+
+    //Enviar peticion por axios
+    clienteAxios.put(`/clientes/${cliente._id}`, cliente).then((res) => {
+      if (res.data.code === 11000) {
+        //console.log("Error duplicado de Mongo");
+        Swal.fire({
+          icon: "error",
+          title: "Hubo un error",
+          text: "No se ha actualizado el cliente",
+        });
+      } else {
+        Swal.fire("Correcto!", "Se actualizo correctamente", "success");
+      }
+
+      //Redireccionar
+      props.history.push("/");
+    });
   };
 
   //Validar el formulario
@@ -48,7 +84,7 @@ function EditarCliente(props) {
   return (
     <Fragment>
       <h2>Editar Cliente</h2>
-      <form>
+      <form onSubmit={actualizarCliente}>
         <legend>Llena todos los campos</legend>
 
         <div className="campo">
@@ -58,6 +94,7 @@ function EditarCliente(props) {
             placeholder="Nombre Cliente"
             name="nombre"
             onChange={actualizarState}
+            value={cliente.nombre}
           />
         </div>
 
@@ -68,6 +105,7 @@ function EditarCliente(props) {
             placeholder="Apellido Cliente"
             name="apellido"
             onChange={actualizarState}
+            value={cliente.apellido}
           />
         </div>
 
@@ -78,6 +116,7 @@ function EditarCliente(props) {
             placeholder="Empresa Cliente"
             name="empresa"
             onChange={actualizarState}
+            value={cliente.empresa}
           />
         </div>
 
@@ -88,6 +127,7 @@ function EditarCliente(props) {
             placeholder="Email Cliente"
             name="email"
             onChange={actualizarState}
+            value={cliente.email}
           />
         </div>
 
@@ -98,6 +138,7 @@ function EditarCliente(props) {
             placeholder="Teléfono Cliente"
             name="telefono"
             onChange={actualizarState}
+            value={cliente.telefono}
           />
         </div>
 
@@ -105,7 +146,7 @@ function EditarCliente(props) {
           <input
             type="submit"
             className="btn btn-azul"
-            value="Agregar Cliente"
+            value="Guardar Cambios"
             disabled={validarCliente()}
           />
         </div>
